@@ -1,183 +1,215 @@
-# Advertiser Analytics ETL Pipeline  
+# 📊 Advertiser Analytics ETL Pipeline  
 ### End-to-End Data Engineering Project (Python, Pandas, Logging, Validation)
 
-This project implements a production-style ETL pipeline that processes raw marketplace data (Olist) and produces advertiser-level daily and monthly KPIs.  
-It simulates real analytics workflows used in organizations such as Microsoft Advertising, Amazon Marketplace Analytics, LinkedIn Marketing Solutions, and retail media teams.
+This project builds a **production-style ETL pipeline** that processes raw marketplace data (Olist dataset) and transforms it into **analytics-ready advertiser KPIs**.  
+It is structured like a real engineering codebase used at Microsoft Advertising, Amazon Marketplace Analytics, and other retail media platforms.
 
 ---
 
-## 1. Project Overview
+## 🚀 Project Summary
 
-The pipeline performs:
+This pipeline:
 
-- Extraction of raw CSV datasets  
-- Cleaning and standardization of order data  
-- Fact table creation at the advertiser level  
-- KPI computation (daily + monthly)  
-- Data validation using Pandera schemas  
-- Logging for observability  
-- Output of clean, analytics-ready tables  
+✅ Loads raw marketplace data (orders, items, customers, products)  
+✅ Cleans & validates the datasets  
+✅ Builds an advertiser-level **fact table**  
+✅ Computes daily & monthly KPIs  
+✅ Enforces data quality with **Pandera schema validation**  
+✅ Logs every stage using a production-style logger  
+✅ Outputs clean CSVs ready for BI dashboards or analytics  
 
-This is structured like a real Data Engineering codebase and demonstrates core DE skills.
-
----
-
-## 2. Project Goals
-
-- Build a complete ETL workflow in Python  
-- Clean and transform raw marketplace data  
-- Implement a reusable, analytics-friendly fact table  
-- Generate advertiser performance KPIs  
-- Enforce data quality using validation schemas  
-- Introduce logging for traceability  
-- Create a maintainable Python package  
-- Produce clear, reproducible output tables  
+The structure follows real DE standards with a modular **src/** package.
 
 ---
 
-## 3. Repository Structure
+## 🧱 Tech Stack
+
+- **Python 3.11**
+- **Pandas** (data transformation)
+- **Pandera** (data validation)
+- **Logging** (observability)
+- **Pathlib** (file handling)
+- **Conda environment** (reproducibility)
+
+---
+
+## 📁 Project Structure
 
 ```
 ms_ad_analytics_project/
 │
-├── data/                       # Raw Olist datasets (.csv)
-├── output/                     # Final KPI outputs
+├── data/                           # Raw input CSVs (ignored by Git)
+├── output/                         # Final KPI outputs
 │
 ├── src/
-│   ├── extract.py              # Load raw data
-│   ├── transform.py            # Cleaning, fact table creation, KPIs
-│   ├── load.py                 # Write output files
-│   ├── validate.py             # Pandera schema validation
-│   ├── logger.py               # Logging utilities
-│   ├── config.py               # Config & settings
-│   ├── pipeline.py             # Main ETL execution
-│   └── __init__.py             # Package initializer
+│   ├── extract.py                  # Extract step
+│   ├── transform.py                # Clean, merge, build fact table
+│   ├── validate.py                 # Pandera schemas
+│   ├── load.py                     # Save outputs
+│   ├── logger.py                   # Custom logger
+│   ├── config.py                   # Config + log level
+│   ├── pipeline.py                 # Main ETL pipeline
+│   └── __init__.py
 │
+├── advertiser_spend_analytics.ipynb # Notebook version
+├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 4. Environment Setup
+## 🏗️ Pipeline Architecture (ASCII Diagram)
 
-### Create a Conda environment
+```
+Raw CSV Files
+    │
+    ▼
+[ Extract ]
+    │
+    ▼
+[ Clean & Normalize Orders ]
+    │
+    ▼
+[ Build Advertiser Fact Table ]
+    │
+    ▼
+[ Validate Data (Pandera) ]
+    │
+    ▼
+[ Compute KPIs ]
+  • Daily KPIs
+  • Monthly KPIs
+    │
+    ▼
+[ Load Outputs to /output ]
+  • daily_advertiser_kpis.csv
+  • monthly_advertiser_kpis.csv
+```
+
+---
+
+## 📊 KPIs Produced
+
+Each advertiser receives:
+
+| Metric | Description |
+|--------|-------------|
+| **orders** | Unique order count |
+| **lines** | Items sold |
+| **revenue** | price + freight (line-level revenue) |
+| **customers** | Unique buyers |
+
+Outputs are available at two time grains:
+
+✅ **Daily KPIs**  
+✅ **Monthly KPIs**
+
+---
+
+## ✅ Fact Table (Advertiser-Level)
+
+Key columns include:
+
+- `advertiser_id` (seller)
+- `order_id`
+- `customer_id`
+- `order_item_id`
+- `order_date`
+- `order_month`
+- `line_revenue`  
+
+This mirrors a real **fact_sales** table used in enterprise analytics.
+
+---
+
+## ⚙️ How to Run the Pipeline
+
+### 1. Create & activate environment  
 ```
 conda create -n msad python=3.11 -y
 conda activate msad
 ```
 
-### Install dependencies
+### 2. Install dependencies  
 ```
-pip install pandas pandera pyarrow pytest python-dotenv
+pip install pandas pandera pyarrow python-dotenv pytest
 ```
 
----
-
-## 5. Running the Pipeline
-
-From Anaconda Prompt:
-
+### 3. Run the pipeline  
 ```
-conda activate msad
-cd "%USERPROFILE%\OneDrive\Desktop\ms_ad_analytics_project"
 python -m src.pipeline
 ```
 
-Output files will appear in:
-
+### 4. Outputs will appear here:  
 ```
-output/
-│
-├── daily_advertiser_kpis.csv
-└── monthly_advertiser_kpis.csv
+output/daily_advertiser_kpis.csv
+output/monthly_advertiser_kpis.csv
 ```
 
 ---
 
-## 6. Data Model Summary
+## 🧪 Data Validation with Pandera
 
-### Fact Table (Advertiser-Level)
+The fact table is validated using a schema that checks:
 
-| Column            | Description                          |
-|------------------|--------------------------------------|
-| advertiser_id     | Seller / advertiser ID               |
-| order_id          | Unique order identifier              |
-| customer_id       | Unique buyer ID                      |
-| order_item_id     | Line item within the order           |
-| order_date        | Daily granularity                    |
-| order_month       | Monthly granularity (YYYY-MM)        |
-| line_revenue      | price + freight                      |
+✅ Column presence  
+✅ Data types  
+✅ Non-negative revenue  
+✅ Valid advertiser/order/customer IDs  
+✅ Monthly format correctness (`YYYY-MM`)  
+✅ No invalid timestamps  
 
-### KPI Outputs
-
-- **orders**: number of unique orders  
-- **lines**: number of items sold  
-- **revenue**: total revenue  
-- **customers**: number of unique buyers  
+If validation fails, the pipeline exits — this matches production behavior.
 
 ---
 
-## 7. Data Validation (Pandera)
+## 📜 Logging (Production-Style)
 
-The pipeline validates the fact table using Pandera schemas.  
-Checks include:
-
-- Required columns  
-- Correct data types  
-- Non-negative revenue  
-- Valid timestamps  
-- Monthly field in `YYYY-MM` format  
-- No missing advertiser/order values  
-
-If validation fails, the pipeline stops with detailed error messages.
-
----
-
-## 8. Logging
-
-Structured logging provides visibility into each stage:
+Example log:
 
 ```
 INFO | Starting ETL pipeline...
-INFO | Extract complete
-INFO | Fact table validation passed
-INFO | Transform complete
-INFO | Load complete
+INFO | Extract completed successfully.
+INFO | Fact table validation passed.
+INFO | KPI computation complete.
+INFO | Load complete. Files saved to /output.
 ```
 
-This mirrors real production logging behavior.
-
 ---
 
-## 9. Why This Project Matters
+## 🎯 Why This Project Matters
 
-This project demonstrates real-world Data Engineering experience:
+This project demonstrates skills required for:
 
-- End-to-end ETL development  
-- Data cleaning and preprocessing  
+✅ **Data Engineering**  
+✅ **Analytics Engineering**  
+✅ **Business Analytics**  
+✅ **Data Analytics**
+
+Key competencies you show:
+
+- ETL design  
 - Fact table modeling  
-- Validation and data quality enforcement  
-- Logging and observability  
-- Python packaging structure  
-- Reproducible environment  
-- Business-oriented analytics generation  
-
-It follows patterns used by engineering teams at Microsoft, Amazon, LinkedIn, DoorDash, and Netflix.
-
----
-
-## 10. Optional Future Enhancements
-
-- CLI arguments (`--start` / `--end`)  
-- Incremental loading with a watermark  
-- DuckDB or dbt transformation layer  
-- Scheduling with Airflow or Prefect  
-- Power BI or Tableau dashboard  
+- Data cleaning / normalization  
+- KPI engineering  
+- Validation & error handling  
+- Modular Python code  
+- Logging & observability  
+- Reproducible environments  
 
 ---
 
-## Author
+## 🌱 Future Enhancements (Optional)
 
+- Add incremental loading (watermark-based)  
+- Add pytest unit tests  
+- Convert transformations to DuckDB or dbt  
+- Schedule using Airflow or Prefect  
+- Add a Power BI or Tableau dashboard  
+
+---
+
+## 👤 Author  
 **Errol Brown**  
-Data Engineering & Analytics  
-Microsoft Business Analytics Associate Candidate
+Data Engineering / Analytics  
+Microsoft Business Analytics Associate Candidate  
