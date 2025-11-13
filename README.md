@@ -64,13 +64,13 @@ ms_ad_analytics_project/
 ```mermaid
 flowchart TD
 
-    A[Raw CSV Files\norders, items, customers] --> B[Extract\nextract.py]
-    B --> C[Clean & Normalize Data\ntransform.py]
-    C --> D[Build Advertiser Fact Table\ntransform.py]
-    D --> E[Validate with Pandera\nvalidate.py]
-    E --> F[Compute KPIs\ndaily + monthly]
-    F --> G[Load Outputs\nload.py]
-    G --> H[Output Folder\nCSV exports]
+    A[Raw CSV Files<br/>orders, items, customers] --> B[Extract<br/>extract.py]
+    B --> C[Clean & Normalize Data<br/>transform.py]
+    C --> D[Build Advertiser Fact Table<br/>transform.py]
+    D --> E[Validate with Pandera<br/>validate.py]
+    E --> F[Compute KPIs<br/>daily + monthly]
+    F --> G[Load Outputs<br/>load.py]
+    G --> H[Output Folder<br/>CSV exports]
 
     %% Styles
     classDef yellow fill:#f8d568,stroke:#b8860b,stroke-width:2px,color:#000;
@@ -90,7 +90,6 @@ flowchart TD
     class G white
     class H white
 ```
-
 ---
 
 ## 📊 KPIs Produced
