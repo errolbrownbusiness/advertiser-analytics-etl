@@ -10,13 +10,13 @@ It is structured like a real engineering codebase used at Microsoft Advertising,
 
 This pipeline:
 
-✅ Loads raw marketplace data (orders, items, customers, products)  
-✅ Cleans & validates the datasets  
-✅ Builds an advertiser-level **fact table**  
-✅ Computes daily & monthly KPIs  
-✅ Enforces data quality with **Pandera schema validation**  
-✅ Logs every stage using a production-style logger  
-✅ Outputs clean CSVs ready for BI dashboards or analytics  
+- Loads raw marketplace data (orders, items, customers, products)  
+- Cleans & validates the datasets  
+- Builds an advertiser-level **fact table**  
+- Computes daily & monthly KPIs  
+- Enforces data quality with **Pandera schema validation**  
+- Logs every ETL stage  
+- Outputs clean CSVs ready for BI dashboards or analytics  
 
 The structure follows real DE standards with a modular **src/** package.
 
@@ -25,11 +25,11 @@ The structure follows real DE standards with a modular **src/** package.
 ## 🧱 Tech Stack
 
 - **Python 3.11**
-- **Pandas** (data transformation)
-- **Pandera** (data validation)
-- **Logging** (observability)
-- **Pathlib** (file handling)
-- **Conda environment** (reproducibility)
+- **Pandas**  
+- **Pandera**  
+- **Pathlib**  
+- **Logging**  
+- **Conda environment**  
 
 ---
 
@@ -51,39 +51,34 @@ ms_ad_analytics_project/
 │   ├── pipeline.py                 # Main ETL pipeline
 │   └── __init__.py
 │
-├── advertiser_spend_analytics.ipynb # Notebook version
+├── advertiser_spend_analytics.ipynb
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 🏗️ Pipeline Architecture (ASCII Diagram)
+## 🏗️ Pipeline Architecture (Mermaid Diagram)
 
-```
-Raw CSV Files
-    │
-    ▼
-[ Extract ]
-    │
-    ▼
-[ Clean & Normalize Orders ]
-    │
-    ▼
-[ Build Advertiser Fact Table ]
-    │
-    ▼
-[ Validate Data (Pandera) ]
-    │
-    ▼
-[ Compute KPIs ]
-  • Daily KPIs
-  • Monthly KPIs
-    │
-    ▼
-[ Load Outputs to /output ]
-  • daily_advertiser_kpis.csv
-  • monthly_advertiser_kpis.csv
+```mermaid
+flowchart TD
+
+    A[Raw CSV Files<br/>orders, items, customers] --> B[Extract<br/>extract.py]
+    B --> C[Clean & Normalize Data<br/>transform.py]
+    C --> D[Build Advertiser Fact Table<br/>transform.py]
+    D --> E[Validate with Pandera<br/>validate.py]
+    E --> F[Compute KPIs<br/>daily + monthly]
+    F --> G[Load Outputs<br/>load.py]
+    G --> H[/output folder<br/>CSV exports]
+
+    style A fill:#f8d568,stroke:#b8860b,stroke-width:2px,color:#000
+    style B fill:#8ec5fc,stroke:#4682b4,stroke-width:2px,color:#000
+    style C fill:#b5e8c8,stroke:#2e8b57,stroke-width:2px,color:#000
+    style D fill:#f6d7fa,stroke:#8b3a9e,stroke-width:2px,color:#000
+    style E fill:#ffe6e6,stroke:#cc0000,stroke-width:2px,color:#000
+    style F fill:#e8e8ff,stroke:#6666cc,stroke-width:2px,color:#000
+    style G fill:#ffffff,stroke:#000,color:#000
+    style H fill:#ffffff,stroke:#000,color:#000
 ```
 
 ---
@@ -99,18 +94,19 @@ Each advertiser receives:
 | **revenue** | price + freight (line-level revenue) |
 | **customers** | Unique buyers |
 
-Outputs are available at two time grains:
+Outputs delivered:
 
-✅ **Daily KPIs**  
-✅ **Monthly KPIs**
+- **Daily KPIs**  
+- **Monthly KPIs**  
+- **Advertiser-level fact table**
 
 ---
 
-## ✅ Fact Table (Advertiser-Level)
+## 📦 Fact Table Schema (Advertiser-Level)
 
-Key columns include:
+Key fields:
 
-- `advertiser_id` (seller)  
+- `advertiser_id`  
 - `order_id`  
 - `customer_id`  
 - `order_item_id`  
@@ -118,29 +114,29 @@ Key columns include:
 - `order_month`  
 - `line_revenue`  
 
-This mirrors a real **fact_sales** table used in enterprise analytics.
+This mirrors a real **fact_sales** dataset used in enterprise analytics.
 
 ---
 
 ## ⚙️ How to Run the Pipeline
 
-### 1. Create & activate environment  
+### 1️⃣ Create & activate environment  
 ```
 conda create -n msad python=3.11 -y
 conda activate msad
 ```
 
-### 2. Install dependencies  
+### 2️⃣ Install dependencies  
 ```
 pip install pandas pandera pyarrow python-dotenv pytest
 ```
 
-### 3. Run the pipeline  
+### 3️⃣ Run the pipeline  
 ```
 python -m src.pipeline
 ```
 
-### 4. Outputs will appear here:  
+### 4️⃣ Outputs will appear in `/output`  
 ```
 output/daily_advertiser_kpis.csv
 output/monthly_advertiser_kpis.csv
@@ -148,22 +144,22 @@ output/monthly_advertiser_kpis.csv
 
 ---
 
-## 🧪 Data Validation with Pandera
+## 🧪 Data Validation (Pandera)
 
-The fact table is validated using a schema that checks:
+The pipeline validates:
 
 - Column presence  
 - Data types  
 - Non-negative revenue  
-- Valid advertiser/order/customer IDs  
-- Monthly format correctness (`YYYY-MM`)  
+- Valid IDs  
+- Date formatting (`YYYY-MM`)  
 - No invalid timestamps  
 
-If validation fails, the pipeline exits — this matches production behavior.
+Validation failures stop the pipeline — matching real production behavior.
 
 ---
 
-## 📜 Logging (Production-Style)
+## 📜 Logging (Production Workflow)
 
 Example log:
 
@@ -179,36 +175,30 @@ INFO | Load complete. Files saved to /output.
 
 ## 🎯 Why This Project Matters
 
-This project demonstrates skills required for:
-
-- **Data Engineering**  
-- **Analytics Engineering**  
-- **Business Analytics**  
-- **Data Analytics**
-
-Key competencies you demonstrate:
+This project demonstrates real DE skills:
 
 - ETL design  
 - Fact table modeling  
 - Data cleaning / normalization  
 - KPI engineering  
-- Validation & error handling  
-- Modular Python code  
+- Pandera validation  
+- Error handling  
 - Logging & observability  
+- Modular Python project architecture  
 - Reproducible environments  
 
 ---
 
-## 🌱 Future Enhancements (Optional)
+## 🌱 Future Enhancements
 
-- Add incremental loading (watermark-based)  
-- Add pytest unit tests  
-- Convert transformations to DuckDB or dbt  
-- Schedule using Airflow or Prefect  
-- Add a Power BI or Tableau dashboard  
+- Incremental loading  
+- Unit tests (pytest)  
+- Use DuckDB or dbt for modeling  
+- Schedule with Airflow or Prefect  
+- Add a BI dashboard (Power BI / Tableau)  
 
 ---
 
 ## 👤 Author  
 **Errol Brown**  
-Data Engineering / Analytics  
+Data Engineering & Analytics  
