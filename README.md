@@ -185,7 +185,7 @@ INFO | Load complete. Files saved to /output.
 
 ## 🎯 Why This Project Matters
 
-You demonstrate:
+I demonstrate:
 
 - ETL pipeline engineering  
 - Fact table modeling  
